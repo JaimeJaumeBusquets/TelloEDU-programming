@@ -3,8 +3,8 @@ from time import sleep
 import math
 
 swarm = TelloSwarm.fromIps([
-    "192.168.1.139",
-    "192.168.1.138",
+    "XXX.XXX.X.XXX",
+    "XXX.XXX.X.XXX",
 ])
 
 swarm.connect()
