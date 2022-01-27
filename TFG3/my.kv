@@ -1,0 +1,483 @@
+WindowManager:
+    ConexionWindow:
+    ControlWindow:
+    PlanVuelo:
+    SwarmConexion:
+    SwarmControl:
+
+<ConexionWindow>:
+    name:"conexion"
+    BoxLayout:
+        cols:3
+        orientation: "vertical"
+
+        Label:
+            size_hint: 1, 0.15
+            text: "APP Tello EDU by Jaime Jaume Busquets"
+            color: 0, 0, 0
+            canvas.before:
+                Color:
+                    rgb:0.7, 0.7, 0.7
+                Rectangle:
+                    size: self.size
+                    pos: self.pos
+
+        Button:
+            id:btn1
+            text: "Conexión Individual"
+            on_press: root.pressedConexion()
+            on_release:
+                app.root.current = "control"
+                root.manager.transition.direction = "right"
+
+        Button:
+            id:btn2
+            text: "Conexión Enjambre"
+            on_press: root.pressedConexionSwarm()
+            on_release:
+                app.root.current = "swarmconex"
+                root.manager.transition.direction = "right"
+
+<ControlWindow>:
+    name:"control"
+    on_enter: root.clock()
+
+    Image:
+        id: video
+        #source: "imagen.jpg"
+        source: "ImagenOut.jpg"
+
+
+    BoxLayout:
+        orientation: "vertical"
+        cols:4
+        BoxLayout:
+            orientation: 'horizontal'
+            Button:
+                size_hint: 1, 0.3
+                pos_hint: {"center_x":1, "center_y":0.9}
+                id: salir
+                text: 'SALIR'
+                on_press:
+                    app.root.current = "conexion"
+                    root.manager.transition.direction = "left"
+                on_release: root.Desconexion()
+            Button:
+                size_hint: 1, 0.3
+                pos_hint: {"center_x":0.5, "center_y":0.9}
+                id:PlanVuelo
+                text: 'PLAN DE VUELO'
+                on_press:
+                    app.root.current = "plan"
+                    root.manager.transition.direction = "left"
+            ToggleButton:
+                size_hint: 1, 0.30
+                pos_hint: {"center_x":0, "center_y":0.9}
+                id: face
+                text: 'FACIAL MODE ON' if self.state == 'normal' else 'FACIAL MODE OFF'
+            ToggleButton:
+                size_hint: 1, 0.30
+                pos_hint: {"center_x":0, "center_y":0.9}
+                id: despegue
+                text: 'DESPEGAR' if self.state == 'normal' else 'ATERRIZAR'
+                on_state: root.DespegaAterriza()
+
+        BoxLayout:
+            cols:2
+            orientation: "horizontal"
+            BoxLayout:
+                size_hint: 0.4, 0.7
+                pos_hint: {"center_x":0, "center_y":0.4}
+                orientation: "vertical"
+                Button:
+                    background_color: 0, 0, 0, 0.2
+                    size_hint: 0.5, 1
+                    id: arriba
+                    pos_hint: {"x":0.25}
+                    text: "^"
+                    on_press: root.Movimiento()
+                    on_release: root.Movimiento()
+
+                BoxLayout:
+                    Button:
+                        background_color: 0, 0, 0, 0.2
+                        id: yawiz
+                        text: "<"
+                        on_press: root.Movimiento()
+                        on_release: root.Movimiento()
+
+                    Button:
+                        background_color: 0, 0, 0, 0.2
+                        id: yawder
+                        text: ">"
+                        on_press: root.Movimiento()
+                        on_release: root.Movimiento()
+
+                Button:
+                    background_color: 0, 0, 0, 0.2
+                    size_hint: 0.5, 1
+                    id: abajo
+                    pos_hint: {"x":0.25}
+                    text: "v"
+                    on_press: root.Movimiento()
+                    on_release: root.Movimiento()
+
+            BoxLayout:
+                orientation: "vertical"
+                size_hint: 0.4, 0.7
+                pos_hint: {"center_x":1, "center_y":0.4}
+                Button:
+                    background_color: 0, 0, 0, 0.2
+                    size_hint: 0.5, 1
+                    id: delante
+                    pos_hint: {"x":0.25}
+                    text: "^"
+                    on_press: root.Movimiento()
+                    on_release: root.Movimiento()
+
+                BoxLayout:
+                    Button:
+                        background_color: 0, 0, 0, 0.2
+                        id: izquierda
+                        text: "<"
+                        on_press: root.Movimiento()
+                        on_release: root.Movimiento()
+
+                    Button:
+                        background_color: 0, 0, 0, 0.2
+                        id: derecha
+                        text: ">"
+                        on_press: root.Movimiento()
+                        on_release: root.Movimiento()
+
+                Button:
+                    background_color: 0, 0, 0, 0.2
+                    size_hint: 0.5, 1
+                    id: atras
+                    pos_hint: {"x":0.25}
+                    text: "v"
+                    on_press: root.Movimiento()
+                    on_release: root.Movimiento()
+
+<PlanVuelo>:
+    name: "plan"
+    BoxLayout:
+        cols:5
+        orientation:"vertical"
+        canvas.before:
+            Color:
+                rgb:0.80, 0.80, 0.80
+            Rectangle:
+                size: self.size
+                pos: self.pos
+        BoxLayout:
+            size_hint: 1, 0.10
+            Button:
+                size_hint: 0.2, 1
+                id: volver
+                text: 'VOLVER'
+                on_press:
+                    app.root.current = "control"
+                    root.manager.transition.direction = "right"
+            Button:
+                size_hint: 0.2, 1
+                id: info
+                text: 'INFO'
+                on_press:root.info()
+
+            Label:
+                text: "CREACIÓN DEL PLAN DE VUELO"
+                color: 0, 0, 0
+        Label:
+            id: labelcomandas
+            size_hint: 1, 0.2
+            text_size: (self.width, None)
+            text: "Comandas: []"
+            color: 0, 0, 0
+
+        GridLayout:
+            cols:6
+            Label:
+                text: "Avanza:"
+                text_size: self.width, None
+                color: 0, 0, 0
+                size_hint:0.20, 1
+
+            TextInput:
+                id:plandelantetexto
+                size_hint:0.15, 1
+                multiline: False
+                input_filter: "int"
+
+            Button:
+                text: "Añadir"
+                id: plandelante
+                size_hint:0.15, 1
+                on_press:root.Comandas()
+
+
+            Label:
+                text: "Retrocede:"
+                text_size: self.width, None
+                color: 0, 0, 0
+                size_hint:0.20, 1
+
+            TextInput:
+                size_hint:0.15, 1
+                id:plandetrastexto
+                multiline: False
+                input_filter: "int"
+
+            Button:
+                text: "Añadir"
+                size_hint:0.15, 1
+                id: plandetras
+                on_press:root.Comandas()
+
+            Label:
+                text: "Derecha:"
+                text_size: self.width, None
+                color: 0, 0, 0
+                size_hint:0.20, 1
+
+            TextInput:
+                size_hint:0.15, 1
+                id:planderechatexto
+                multiline: False
+                input_filter: "int"
+
+            Button:
+                text: "Añadir"
+                size_hint:0.15, 1
+                id:planderecha
+                on_press:root.Comandas()
+
+            Label:
+                text: "Izquierda:"
+                text_size: self.width, None
+                color: 0, 0, 0
+                size_hint:0.20, 1
+
+            TextInput:
+                size_hint:0.15, 1
+                id:planizquierdatexto
+                multiline: False
+                input_filter: "int"
+
+            Button:
+                text: "Añadir"
+                size_hint:0.15, 1
+                id:planizquierda
+                on_press:root.Comandas()
+
+            Label:
+                text: "Asciende:"
+                text_size: self.width, None
+                color: 0, 0, 0
+                size_hint:0.20, 1
+
+            TextInput:
+                size_hint:0.15, 1
+                id:planarribatexto
+                multiline: False
+                input_filter: "int"
+
+            Button:
+                text: "Añadir"
+                size_hint:0.15, 1
+                id:planarriba
+                on_press:root.Comandas()
+
+            Label:
+                text: "Desciende:"
+                text_size: self.width, None
+                color: 0, 0, 0
+                size_hint:0.20, 1
+
+            TextInput:
+                size_hint:0.15, 1
+                id:planabajotexto
+                multiline: False
+                input_filter: "int"
+
+            Button:
+                text: "Añadir"
+                size_hint:0.15, 1
+                id:planabajo
+                on_press:root.Comandas()
+
+            Label:
+                text: "Rota (Horario):"
+                text_size: self.width, None
+                color: 0, 0, 0
+                size_hint:0.20, 1
+
+            TextInput:
+                size_hint:0.15, 1
+                id:planhorariotexto
+                multiline: False
+                input_filter: "int"
+
+            Button:
+                text: "Añadir"
+                size_hint:0.15, 1
+                id:planhorario
+                on_press:root.Comandas()
+
+            Label:
+                text: "Rota (Antihorario):"
+                text_size: self.width, None
+                color: 0, 0, 0
+                size_hint:0.20, 1
+
+            TextInput:
+                size_hint:0.15, 1
+                id:planantihorariotexto
+                multiline: False
+                input_filter: "int"
+
+            Button:
+                text: "Añadir"
+                size_hint:0.15, 1
+                id:planantihorario
+                on_press:root.Comandas()
+
+        BoxLayout:
+            orientation: "horizontal"
+            size_hint: 1, 0.2
+            Button:
+                text: "Despegar"
+                id:plandespegue
+                on_press:root.Comandas()
+
+            Button:
+                text: "Aterrizar"
+                id:planaterrizaje
+                on_press:root.Comandas()
+
+        BoxLayout:
+            orientation: "horizontal"
+            size_hint: 1, 0.2
+            Button:
+                text: "Eliminar última comanda"
+                id: planelimina
+                on_press:root.Comandas()
+
+            Button:
+                text: "Iniciar vuelo"
+                id: planvuela
+                on_press:root.Comandas()
+
+<SwarmConexion>:
+    name: "swarmconex"
+    BoxLayout:
+        spacing: 100
+        cols:3
+        orientation:"vertical"
+        canvas.before:
+            Color:
+                rgb:0.80, 0.80, 0.80
+            Rectangle:
+                size: self.size
+                pos: self.pos
+        GridLayout:
+            cols:2
+            Label:
+                text: "Nombre de la red WIFI:"
+                color: 0, 0, 0
+
+            TextInput:
+                id:idwifi
+                multiline: False
+
+            Label:
+                text: "Contraseña:"
+                color: 0, 0, 0
+
+            TextInput:
+                id:passwifi
+                multiline: False
+
+        BoxLayout:
+            orientation: "vertical"
+            Label:
+                text: "IPS ASIGNADAS A LOS DRONES"
+                color: 0, 0, 0
+            BoxLayout:
+                orientation: "horizontal"
+                Label:
+                    text: "IP:"
+                    color: 0, 0, 0
+
+                TextInput:
+                    id:ip
+                    multiline: False
+
+                Button:
+                    text: "Añadir"
+                    on_press:root.SetIps()
+        BoxLayout:
+            orientation: "horizontal"
+            Button:
+                text: "VOLVER"
+                on_press:
+                    app.root.current = "conexion"
+                    root.manager.transition.direction = "left"
+            Button:
+                text: "CAMBIAR A MODO AP"
+                id: wificonex
+                on_press:root.APConexion()
+
+            Button:
+                text: "CONTROLA EL ENJAMBRE"
+                id: swarmconex
+                on_release:
+                    app.root.current = "swarmcontr"
+                    root.manager.transition.direction = "right"
+
+
+<SwarmControl>:
+    on_enter: root.pressedConexion()
+    name: "swarmcontr"
+    BoxLayout:
+        spacing: 200
+        orientation: "vertical"
+        BoxLayout:
+            orientation: "horizontal"
+            size_hint: (1, 0.3)
+            Button:
+                text: "DESPEGAR"
+                id: desp
+                on_press:root.Despegue()
+
+            Button:
+                text: "ATERRIZAR"
+                id: atr
+                on_press:root.Aterrizaje()
+
+        BoxLayout:
+            orientation: 'vertical'
+            Label:
+                text: "COREOGRAFIA"
+
+            BoxLayout:
+                orientation: "horizontal"
+                Button:
+                    text: "CUADRADO"
+                    id: cuadrado
+                    on_press:root.Cuadrado()
+
+                Button:
+                    text: "CIRCULO"
+                    id: circulo
+                    on_press:root.Circulo()
+
+                Button:
+                    text: "FLIPS"
+                    id: flips
+                    on_press:root.Flips()
+
+                ToggleButton:
+                    text: "REBOTE"
+                    id: rebote
+                    on_state: root.BucleRebote()
